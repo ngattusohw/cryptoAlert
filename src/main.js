@@ -55,7 +55,7 @@ function send_message(message){
 	});
 }
 
-function get_GDAX_data(start,end){
+function get_GDAX_data(){
 	request.get({
       url: 'https://api.gdax.com/products/ETH-USD/stats',
       headers: {
@@ -67,4 +67,4 @@ function get_GDAX_data(start,end){
    	});
 }
 
-get_GDAX_data('2017-07-011T12:00:00','2017-07-014T12:00:00');
+get_GDAX_data();
