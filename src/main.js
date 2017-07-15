@@ -57,12 +57,8 @@ function send_message(message){
 
 function get_GDAX_data(start,end){
 	request.get({
-      url: 'https://api.gdax.com/products/ETH-USD/candles',
-      qs: {
-         start: start,
-         end: end,
-         granularity: '86400'
-      }, headers: {
+      url: 'https://api.gdax.com/products/ETH-USD/stats',
+      headers: {
          'User-Agent': 'cryptopredictor node.js"'
       }
    }, function(error, response, body) {
@@ -71,4 +67,4 @@ function get_GDAX_data(start,end){
    	});
 }
 
-get_GDAX_data('2016-07-01T12:00:00','2017-01-05T12:00:00');
+get_GDAX_data('2017-07-011T12:00:00','2017-07-014T12:00:00');
