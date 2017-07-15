@@ -6,6 +6,7 @@
   "dependencies": {
     "https": "^1.0.0",
     "properties-reader": "0.0.15",
+    "request": "^2.81.0",
     "textmagic-rest-client": "0.0.5"
   },
   "devDependencies": {},
