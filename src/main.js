@@ -5,9 +5,12 @@
 //     console.log('Messages.send()', err, res);
 // });
 
+var schedule = require('node-schedule');
 var request = require('request');
-
+var https = require('https');
+var async = require('async');
 var PropertiesReader = require('properties-reader');
+
 var properties = PropertiesReader('props.ini');
 
 var key = properties.get('api.key');
@@ -15,8 +18,19 @@ var secret = properties.get('api.secret');
 var to_number = properties.get('numbers.to');
 var from_number = properties.get('numbers.from');
 
+var time = {
+	hour: properties.get('time.hour'),
+	minutes: properties.get('time.minutes')
+}
 
-var https = require('https');
+var index_properties = PropertiesReader('indexes.ini');
+
+var index_array = [];
+
+for(var x=0;x<index_properties.length;x++){
+	index_array.push(index_properties.get('indexes.' + x));
+}
+
 
 function send_message(message){
 	var data = JSON.stringify({
@@ -55,16 +69,29 @@ function send_message(message){
 	});
 }
 
-function get_GDAX_data(){
+var the_requests = function(index){
 	request.get({
-      url: 'https://api.gdax.com/products/ETH-USD/stats',
+      url: 'https://api.gdax.com/products/' + index + '/stats',
       headers: {
          'User-Agent': 'cryptopredictor node.js"'
       }
-   }, function(error, response, body) {
+   	}, function(error, response, body) {
    		var json = JSON.parse(body);
    		console.log(json);
    	});
 }
 
-get_GDAX_data();
+function get_GDAX_data(){
+	
+	async.map(index_array, the_requests, function (err,result) {
+		console.log(result)
+	});
+
+}
+
+var j = schedule.scheduleJob(time, function(){
+    get_GDAX_data();
+});
+
+
+
