@@ -69,7 +69,7 @@ function send_message(message){
 	});
 }
 
-var the_requests = function(index){
+var the_requests = function(index,doneCallback){
 	request.get({
       url: 'https://api.gdax.com/products/' + index + '/stats',
       headers: {
@@ -77,7 +77,8 @@ var the_requests = function(index){
       }
    	}, function(error, response, body) {
    		var json = JSON.parse(body);
-   		console.log(json);
+   		json.index = index;
+   		doneCallback(null,json)
    	});
 }
 
@@ -92,6 +93,4 @@ function get_GDAX_data(){
 var j = schedule.scheduleJob(time, function(){
     get_GDAX_data();
 });
-
-
 
