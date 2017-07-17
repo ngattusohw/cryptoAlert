@@ -86,11 +86,17 @@ function get_GDAX_data(){
 	
 	async.map(index_array, the_requests, function (err,result) {
 		console.log(result)
+		return result;
 	});
 
 }
 
 var j = schedule.scheduleJob(time, function(){
-    get_GDAX_data();
+    var message = get_GDAX_data();
+    send_message(message);
+});
+
+var k = schedule.scheduleJob('*/5 * * * *', function(){
+	get_GDAX_data();
 });
 
