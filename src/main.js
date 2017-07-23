@@ -23,12 +23,23 @@ var time = {
 	minute: properties.get('time.minutes')
 }
 
+function Indexes(name,high,low){
+	this.name = name;
+	this.high = high;
+	this.low = low;
+}
+
 var index_properties = PropertiesReader('indexes.ini');
+var amount = index_properties.get('indexes.amount');
+console.log("The amount " + amount);
 
 var index_array = [];
 
-for(var x=0;x<index_properties.length;x++){
-	index_array.push(index_properties.get('indexes.' + x));
+for(var x=0;x<amount;x++){
+	index_array.push(new Indexes(index_properties.get('indexes.' + x)
+		,index_properties.get(x + '.high')
+		,index_properties.get(x + '.low')));
+	console.log(index_array[x]);
 }
 
 
@@ -71,13 +82,13 @@ function send_message(message){
 
 var the_requests = function(index,doneCallback){
 	request.get({
-      url: 'https://api.gdax.com/products/' + index + '/stats',
+      url: 'https://api.gdax.com/products/' + index.name + '/stats',
       headers: {
          'User-Agent': 'cryptopredictor node.js"'
       }
    	}, function(error, response, body) {
    		var json = JSON.parse(body);
-   		json.index = index;
+   		json.index = index.name;
    		doneCallback(null,json)
    	});
 }
@@ -107,9 +118,25 @@ var j = schedule.scheduleJob(time, function(){
     
 });
 
-// var k = schedule.scheduleJob('*/5 * * * *', function(){
-// 	get_GDAX_data();
-// });
-// 
+//Change this in the future to be able to specify how often 
+//it will check the markets..
+//Also need to figure out threshold.. 
+ var check = schedule.scheduleJob('*/1 * * * *', function(){
+
+	get_GDAX_data(function(result){
+		for(var x in result){
+			console.log("In here");
+			if(result[x].high >= index_array[x].high){
+				var message = "Index: " + result[x].index +
+					" has gone over the high limit! Current: " +
+					result[x].last;
+				send_message(message);
+			}
+		}
+	});
+});
+
+
+
 
 
