@@ -20,7 +20,7 @@ var from_number = properties.get('numbers.from');
 
 var time = {
 	hour: properties.get('time.hour'),
-	minutes: properties.get('time.minutes')
+	minute: properties.get('time.minutes')
 }
 
 var index_properties = PropertiesReader('indexes.ini');
@@ -82,21 +82,34 @@ var the_requests = function(index,doneCallback){
    	});
 }
 
-function get_GDAX_data(){
+function get_GDAX_data(doneCallback){
 	
 	async.map(index_array, the_requests, function (err,result) {
 		console.log(result)
-		return result;
+		return doneCallback(result);
 	});
 
 }
 
 var j = schedule.scheduleJob(time, function(){
-    var message = get_GDAX_data();
-    send_message(message);
+    get_GDAX_data(function(result){
+    	var hold = result;
+    	var message = "";
+    	for(var i in hold){
+    		message+= "\n Index: " + hold[i].index + " Recent: " + 
+					hold[i].last + " High: " + hold[i].high + " Low: " +
+					hold[i].low;
+    	}
+    	console.log(" This is my message" + message);
+    	console.log(hold);
+    	send_message(message);
+    });
+    
 });
 
-var k = schedule.scheduleJob('*/5 * * * *', function(){
-	get_GDAX_data();
-});
+// var k = schedule.scheduleJob('*/5 * * * *', function(){
+// 	get_GDAX_data();
+// });
+// 
+
 
